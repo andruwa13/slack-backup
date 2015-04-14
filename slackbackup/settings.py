@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = os.getenv('APP_SECRET_KEY', '=1kp%mj^h4r!$_2vy9@4541)=+mc*3jxmc8lj00pm$$-1$8j*(')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('APP_DEBUG', False)
 
 TEMPLATE_DEBUG = False
 
