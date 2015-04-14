@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=1kp%mj^h4r!$_2vy9@4541)=+mc*3jxmc8lj00pm$$-1$8j*('
+SECRET_KEY = os.getenv('APP_SECRET_KEY', '=1kp%mj^h4r!$_2vy9@4541)=+mc*3jxmc8lj00pm$$-1$8j*(')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -125,7 +125,7 @@ except ImportError:
 
 if DEBUG == False:
     DATABASES['default'] =  dj_database_url.config()
-    DOMAIN = "http://slackbk.herokuapp.com"
+    DOMAIN = os.getenv('HEROKU_APP_URL', "http://slackbk.herokuapp.com")
     SLACK_CLIENT_ID = os.getenv('SLACK_CLIENT_ID', '')
     SLACK_CLIENT_SECRET =  os.getenv('SLACK_CLIENT_SECRET', '')
 
@@ -138,4 +138,4 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',
 )
 
-ADMINS = (('Fountainhead', 'hong@vietnamdevelopers.com'))
+ADMINS = (('Jonathan', 'jonathan@innovattic.com'))
