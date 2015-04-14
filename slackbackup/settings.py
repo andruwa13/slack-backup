@@ -123,14 +123,14 @@ except ImportError:
     pass
 
 
-if DEBUG == False:
-    DATABASES['default'] =  dj_database_url.config()
-    DOMAIN = os.getenv('HEROKU_APP_URL', "http://slackbk.herokuapp.com")
-    SLACK_CLIENT_ID = os.getenv('SLACK_CLIENT_ID', '')
-    SLACK_CLIENT_SECRET =  os.getenv('SLACK_CLIENT_SECRET', '')
+#if DEBUG == False:
+DATABASES['default'] =  dj_database_url.config()
+DOMAIN = os.getenv('HEROKU_APP_URL', "http://slackbk.herokuapp.com")
+SLACK_CLIENT_ID = os.getenv('SLACK_CLIENT_ID', '')
+SLACK_CLIENT_SECRET =  os.getenv('SLACK_CLIENT_SECRET', '')
 
-    from sendgridify import sendgridify
-    EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_USE_TLS = sendgridify()
+from sendgridify import sendgridify
+EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_USE_TLS = sendgridify()
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
