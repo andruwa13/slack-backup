@@ -15,6 +15,28 @@ If you want to test locally, you should install all modules in requirements.txt 
 
 [http://slackbk.herokuapp.com](http://slackbk.herokuapp.com)
 
+Manual Installation
+----------------------
+
+### Get your Slack client_id and client_secret
+
+[https://api.slack.com/applications](https://api.slack.com/applications)
+
+### Download provisioning script
+
+    curl -O https://raw.githubusercontent.com/snakazawa/slack-backup/master/provisioning_on_amazonlinux.sh
+
+### Edit provisioning script
+
+    SLACK_CLIENT_ID=[your_client_id]
+    SLACK_CLIENT_SECRET=[your_client_secret]
+    DOMAIN=[your_domain]
+
+### Execute provisioning script
+
+    chmod 777 provisioning_on_amazonlinux.sh
+    sudo ./provisioning_on_amazonlinux.sh
+
 Installation in Heroku
 ----------------------
 
