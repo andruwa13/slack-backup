@@ -26,6 +26,7 @@ TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
+DOMAIN = os.getenv('HEROKU_APP_URL', "http://localhost")
 
 # Application definition
 
@@ -95,7 +96,7 @@ TEMPLATE_LOADERS = (
 )
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
-
+DATABASES['default'].update(dj_database_url.config())
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -104,8 +105,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 # Static asset configuration
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
@@ -115,22 +114,21 @@ STATICFILES_DIRS = (
 
 AUTH_USER_MODEL = 'user_profile.User'
 
+DOMAIN = os.getenv('HEROKU_APP_URL', "http://slackbk.herokuapp.com")
+SLACK_CLIENT_ID = os.getenv('SLACK_CLIENT_ID', '')
+SLACK_CLIENT_SECRET = os.getenv('SLACK_CLIENT_SECRET', '')
+
+from sendgridify import sendgridify
+
+try:
+    EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_USE_TLS = sendgridify()
+except EnvironmentError:
+    pass
 
 try:
     from settings_local import *
 except ImportError:
-
     pass
-
-
-#if DEBUG == False:
-DATABASES['default'] =  dj_database_url.config()
-DOMAIN = os.getenv('HEROKU_APP_URL', "http://slackbk.herokuapp.com")
-SLACK_CLIENT_ID = os.getenv('SLACK_CLIENT_ID', '')
-SLACK_CLIENT_SECRET =  os.getenv('SLACK_CLIENT_SECRET', '')
-
-from sendgridify import sendgridify
-EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_USE_TLS = sendgridify()
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
