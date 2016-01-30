@@ -125,6 +125,14 @@ try:
 except EnvironmentError:
     pass
 
+# Logging
+import logging
+logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s %(levelname)s %(message)s',
+        filename=os.path.join(BASE_DIR, 'logs/server.log')
+)
+
 try:
     from settings_local import *
 except ImportError:

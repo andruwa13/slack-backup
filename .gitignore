@@ -5,3 +5,4 @@ venv
 staticfiles
 settings_local.py
 db.sqlite3
+/logs/*.log
