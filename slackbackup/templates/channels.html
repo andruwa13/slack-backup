@@ -6,21 +6,50 @@
     <h4>Channels</h4>
     <table class="table table-striped">
         {% for channel in channels %}
-            <tr>
-                <td><a href="/channels/{{ channel.id }}/">
-                    {{ channel.name }}</a>
-                </td>
-            </tr>
+            {% if not channel.is_archived %}
+                <tr>
+                    <td><a href="/channels/{{ channel.id }}/">
+                        {{ channel.name }}</a>
+                    </td>
+                </tr>
+            {% endif %}
         {% endfor %}
     </table>
     <h4>Private Groups</h4>
     <table class="table table-striped">
         {% for channel in groups %}
-            <tr>
-                <td><a href="/channels/{{ channel.id }}/">
-                    {{ channel.name }}</a>
-                </td>
-            </tr>
+            {% if not channel.is_archived %}
+                <tr>
+                    <td><a href="/channels/{{ channel.id }}/">
+                        {{ channel.name }}</a>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+
+    <h4>Archived Channels</h4>
+    <table class="table table-striped">
+        {% for channel in channels %}
+            {% if channel.is_archived %}
+                <tr>
+                    <td><a href="/channels/{{ channel.id }}/">
+                        {{ channel.name }}</a>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    <h4>Archived Private Groups</h4>
+    <table class="table table-striped">
+        {% for channel in groups %}
+            {% if channel.is_archived %}
+                <tr>
+                    <td><a href="/channels/{{ channel.id }}/">
+                        {{ channel.name }}</a>
+                    </td>
+                </tr>
+            {% endif %}
         {% endfor %}
     </table>
 {% endblock %}
