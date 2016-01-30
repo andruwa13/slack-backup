@@ -15,7 +15,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         now = datetime.datetime.now()
-        channels = Channel.objects.filter( next_crawl_time__lt = now)[:10]
+        channels = Channel.objects.filter( next_crawl_time__lt = now)
 
 
         for c in channels:
