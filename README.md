@@ -22,6 +22,8 @@ Manual Installation
 
 [https://api.slack.com/applications](https://api.slack.com/applications)
 
+Redirect URI(s) is http://\[your_domain\]
+
 ### Download provisioning script
 
     curl -O https://raw.githubusercontent.com/snakazawa/slack-backup/master/provisioning_on_amazonlinux.sh
