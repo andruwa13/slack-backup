@@ -13,7 +13,7 @@ def home(request):
 
         return HttpResponseRedirect('/team')
     variables = {}
-    return render_to_response('index.html', variables, context_instance=RequestContext(request))
+    return render(request, 'index.html', variables)
 
 
 @login_required
@@ -99,7 +99,7 @@ def stats(request):
          }
     )
 
-    return render_to_response('stats.html', {'stats': stats}, context_instance=RequestContext(request))
+    return render(request, 'stats.html', {'stats': stats})
 
 
 
@@ -107,7 +107,7 @@ def stats(request):
 def channels(request):
     channels, groups = crawl_all_channel(request.user)
     variables = {'channels': channels, 'groups': groups}
-    return render_to_response('channels.html', variables, context_instance=RequestContext(request))
+    return render(request, 'channels.html', variables)
 
 
 @login_required
@@ -116,7 +116,7 @@ def channel_detail(request, channel_id):
 
     messages = Message.objects.filter(channel=channel).order_by('-ts')
     variables = {'channel': channel, 'messages': messages}
-    return render_to_response('channel.html', variables, context_instance=RequestContext(request))
+    return render(request, 'channel.html', variables)
 
 @login_required
 def channel_message(request, message_id):
@@ -135,14 +135,14 @@ def channel_detail_name(request, channel_name):
 
     messages = Message.objects.filter(channel=channel).order_by('-ts')
     variables = {'channel': channel, 'messages': messages}
-    return render_to_response('channel.html', variables, context_instance=RequestContext(request))
+    return render(request, 'channel.html', variables)
 
 @login_required
 def user(request, username):
     user = User.objects.get(slack_username=username )
     messages = Message.objects.filter(user_slack_id=user.slack_id).order_by('-ts')
     variables = {'user': user, 'messages': messages}
-    return render_to_response('user.html', variables, context_instance=RequestContext(request))
+    return render(request, 'user.html', variables)
 
 
 
@@ -154,4 +154,4 @@ def team(request):
     members = team.parse_members()
 
     variables = {'members': members}
-    return render_to_response('members.html', variables, context_instance=RequestContext(request))
+    return render(request, 'members.html', variables)

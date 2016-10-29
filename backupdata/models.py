@@ -185,6 +185,7 @@ class Channel(models.Model):
                 if js['error'] == 'token_revoked':
                     # bad scenario, should use some working token instead
                     # TODO improve
+                    pass
                     #self.creator_slack_id = change to admin user
                     #self.save()
                 return  False
