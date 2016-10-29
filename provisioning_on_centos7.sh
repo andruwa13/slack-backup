@@ -24,6 +24,7 @@ sudo sed -i -E "s/DOMAIN.*/DOMAIN = 'http:\/\/${DOMAIN}'/" slackbackup/settings_
 # migration and crawling
 sudo python manage.py makemigrations
 sudo python manage.py migrate
+sudo python manage.py installwatson
 sudo python manage.py parse_channels
 
 # prepare static files
