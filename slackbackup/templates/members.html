@@ -6,7 +6,7 @@
         {% for m in members %}
             <tr>
             <td>
-            {{ m.username }}</td></tr>
+            <a href="/team/{{ m.slack_username}}" >{{ m.username }}</a></td></tr>
         {% endfor %}
     </table>
 

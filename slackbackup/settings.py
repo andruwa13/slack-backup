@@ -37,9 +37,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'emoji',
     'user_profile',
     'backupdata',
-    'endless_pagination'
+    'el_pagination'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -105,7 +106,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 # Static asset configuration
-STATIC_ROOT = 'staticfiles'
+STATIC_ROOT = 'staticfiles/static'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
@@ -114,24 +115,49 @@ STATICFILES_DIRS = (
 
 AUTH_USER_MODEL = 'user_profile.User'
 
-DOMAIN = os.getenv('HEROKU_APP_URL', "http://slackbk.herokuapp.com")
+DOMAIN = os.getenv('APP_URL', "http://localhost:8000")
 SLACK_CLIENT_ID = os.getenv('SLACK_CLIENT_ID', '')
 SLACK_CLIENT_SECRET = os.getenv('SLACK_CLIENT_SECRET', '')
 
-from sendgridify import sendgridify
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'main_formatter': {
+            'format': '%(levelname)s:%(name)s: %(message)s '
+                      '(%(asctime)s; %(filename)s:%(lineno)d)',
+            'datefmt': "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    'handlers': {
+        'debug_file':{
+            'level' : 'DEBUG',
+            'class' : 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+            'maxBytes': 1024*1024*500, # 500 MB
+            'backupCount' : 5,
+            'formatter': 'main_formatter',
+        },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_formatter',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['debug_file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['debug_file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
-try:
-    EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_PORT, EMAIL_USE_TLS = sendgridify()
-except EnvironmentError:
-    pass
-
-# Logging
-import logging
-logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s %(levelname)s %(message)s',
-        filename=os.path.join(BASE_DIR, 'logs/server.log')
-)
 
 try:
     from settings_local import *
@@ -144,4 +170,4 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',
 )
 
-ADMINS = (('Jonathan', 'jonathan@innovattic.com'))
+ADMINS = (('admin', os.getenv('ADMIN_EMAIL', '')))

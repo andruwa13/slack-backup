@@ -15,34 +15,10 @@
             {% endif %}
         {% endfor %}
     </table>
-    <h4>Private Groups</h4>
-    <table class="table table-striped">
-        {% for channel in groups %}
-            {% if not channel.is_archived %}
-                <tr>
-                    <td><a href="/channels/{{ channel.id }}/">
-                        {{ channel.name }}</a>
-                    </td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
 
     <h4>Archived Channels</h4>
     <table class="table table-striped">
         {% for channel in channels %}
-            {% if channel.is_archived %}
-                <tr>
-                    <td><a href="/channels/{{ channel.id }}/">
-                        {{ channel.name }}</a>
-                    </td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-    </table>
-    <h4>Archived Private Groups</h4>
-    <table class="table table-striped">
-        {% for channel in groups %}
             {% if channel.is_archived %}
                 <tr>
                     <td><a href="/channels/{{ channel.id }}/">

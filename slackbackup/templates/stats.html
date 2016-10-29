@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block main %}
+    {% for stat in stats %}
+    <h2>{{ stat.name }} <small>Total: {{ stat.total }}</small></h2>
+
+    <table class="table table-striped">
+        {% for item in stat.items %}
+            <tr>
+                <td>
+                    <a href="{{ item.link}}" >{{ item.name }}</a>
+                </td>
+                <td>
+	            {{ item.value }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% endfor %}
+{% endblock %}

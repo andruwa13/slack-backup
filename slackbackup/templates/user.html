@@ -85,7 +85,7 @@ blockquote:last-of-type {
     </style>
 
     <h2>
-        {{ channel.name }}</h2>
+        {{ user.slack_username }}</h2>
 
 
 
@@ -97,9 +97,10 @@ blockquote:last-of-type {
                 <td class="username">
                     <img src="{{ m.get_user.slack_avatar }}" style="width: 24px; height: 24px;"/>
                     {{ m.get_user.slack_username }}
-		<div style="position:relative; top: -80px"  id="message-{{ m.id }}"></div>
+		<div style="position:relative; top: 150px"  id="message-{{ m.id }}"></div>
 		</td>
                 <td>
+                    <a href="/message/{{m.id}}">In: {{m.channel.name}}</a><br>
                     {{ m.get_text |safe|linebreaksbr|emoji_replace }}
 
                     <span class="dt">{{ m.ts }}</span>

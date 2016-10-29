@@ -6,7 +6,10 @@ from django.db import models
 import re
 import requests
 from user_profile.models import User
-
+import cgi
+from math import *
+import logging
+from django.utils.dateformat import format
 
 def crawl_all_channel(user):
     url = "https://slack.com/api/channels.list?token=" + user.slack_access_token
@@ -17,7 +20,7 @@ def crawl_all_channel(user):
     url = "https://slack.com/api/groups.list?token=" + user.slack_access_token
     r = requests.get(url)
 
-    groups = parse_channel(user, json.loads(r.content)['groups'], True)
+    groups = []
 
     return channels, groups
 
@@ -68,10 +71,10 @@ def add_messages(messages, channel):
 
 class Channel(models.Model):
     name = models.CharField(max_length=100, default='')
-    topic = models.TextField(default='')
+    topic = models.TextField(default='', blank=True)
     purpose = models.TextField(default='')
     slack_id = models.CharField(max_length=10, default='')
-    creator_slack_id = models.CharField(max_length=10, default='')
+    creator_slack_id = models.CharField(max_length=10, default='', blank=True)
 
     next_crawl_time = models.DateTimeField(auto_now_add=True)
     next_crawl_cycle = models.IntegerField(default=1)  # hours
@@ -86,7 +89,7 @@ class Channel(models.Model):
         return self.name
 
     def get_creator(self):
-        print "self.name: " + self.name
+        #print "self.name: " + self.name
         #print "self.creator_slack_id: " + self.creator_slack_id
         if self.creator_slack_id:
             u = User.objects.get(slack_id=self.creator_slack_id)
@@ -98,18 +101,18 @@ class Channel(models.Model):
                 u = None
         return u
 
-    def crawl_history(self):
+    def crawl_history(self, verbose=False):
+
+        logger = logging.getLogger(__name__)
 
         if self.get_creator() is None:
+            # TODO improve, should use token of admin user
+            print "Can't get creator for channel - " + self.name
             return
-
-        if self.is_privategroup == False:
-            url = 'https://slack.com/api/channels.history'
         else:
-            url = 'https://slack.com/api/groups.history'
+            token = self.get_creator().slack_access_token
 
-        url += "?token=" + self.get_creator().slack_access_token
-
+        print "Parse channel: " + self.name
         epoch = datetime.fromtimestamp(0)
 
         if self.oldest_crawled is None:
@@ -118,10 +121,22 @@ class Channel(models.Model):
             self.save()
 
         while self.oldest_crawled > epoch:
+
+            if self.is_privategroup == False:
+                url = 'https://slack.com/api/channels.history'
+            else:
+                url = 'https://slack.com/api/groups.history'
+
+            url += "?token=" + token
+
             url += "&channel=" + self.slack_id
-            url += "&latest=" + str((self.oldest_crawled - datetime(1970, 1, 1)).total_seconds())
+            url += "&latest=" +  format(self.oldest_crawled, u'U') 
 
             r = requests.get(url)
+
+            if verbose:
+                logger.info(url)
+
             js = json.loads(r.content)
 
             messages = js['messages']
@@ -145,18 +160,35 @@ class Channel(models.Model):
         now = datetime.now()
 
         while self.latest_crawled < now:
+
+            if self.is_privategroup == False:
+                url = 'https://slack.com/api/channels.history'
+            else:
+                url = 'https://slack.com/api/groups.history'
+
+            url += "?token=" + token
+
             url += "&channel=" + self.slack_id
-            url += "&oldest=" + str((self.latest_crawled - datetime(1970, 1, 1)).total_seconds())
+            url += "&oldest=" + format(self.latest_crawled, u'U') 
 
             self.latest_crawled = self.latest_crawled + timedelta(hours=12)
             if self.latest_crawled > now:
                 self.latest_crawled = now
             self.save()
 
-            url += "&latest=" + str((self.latest_crawled - datetime(1970, 1, 1)).total_seconds())
+            url += "&latest=" + format(self.latest_crawled, u'U') 
 
             r = requests.get(url)
             js = json.loads(r.content)
+            if 'error' in js:
+                print "api error" + js['error']
+                if js['error'] == 'token_revoked':
+                    # bad scenario, should use some working token instead
+                    # TODO improve
+                    #self.creator_slack_id = change to admin user
+                    #self.save()
+                return  False
+
             messages = js['messages']
 
             if len(messages) == 0:
@@ -201,6 +233,17 @@ class Message(models.Model):
 
     channel = models.ForeignKey(Channel, null=True)
 
+    def __unicode__(self):
+        return self.get_text()
+
+    def __str__(self):
+        return self.get_text()
+
+
+    def get_absolute_url(self):
+        from django.core.urlresolvers import reverse
+        return  reverse('message', args=(self.id,))
+
     def get_user(self):
         if self.user is None:
             u = User.objects.filter(slack_id=self.user_slack_id)[0]
@@ -209,7 +252,45 @@ class Message(models.Model):
 
         return self.user
 
+    def unescape_html(self, html):
+        html = html.replace('&lt;', '<')
+        html = html.replace('&gt;', '>')
+        html = html.replace('&amp;', '&')
+        return html
+
     def get_text(self):
+
+        quote = re.compile('^&gt; (.*?)\n', re.MULTILINE|re.DOTALL)
+        quote_results = quote.findall(self.text)
+        #print self.text.encode('ascii', 'ignore')
+       	for quote_m in quote_results:
+            #print quote_m.encode('ascii', 'ignore')
+            self.text = self.text.replace("&gt; " + quote_m + "\n", "<blockquote>" + quote_m + "</blockquote>" )
+
+
+        pre = re.compile('```(.*?)```', re.MULTILINE|re.DOTALL)
+
+        pre_results = pre.findall(self.text)
+
+        for pre_m in pre_results:
+            from pygments import highlight
+            from pygments.lexers import guess_lexer
+            from pygments.lexers.special import TextLexer
+            from pygments.formatters import HtmlFormatter
+            from pygments.util import ClassNotFound
+            try:
+                lexer = guess_lexer(self.unescape_html(pre_m[:2048]))
+            except (ClassNotFound, ValueError):
+                lexer = TextLexer()
+            formatted =  highlight(self.unescape_html(pre_m), lexer, HtmlFormatter())
+            self.text = self.text.replace("```" + pre_m + "```",  formatted )
+
+        code = re.compile('`(.*?)`', re.MULTILINE|re.DOTALL)
+        code_results = code.findall(self.text)
+
+        for code_m in code_results:
+            self.text = self.text.replace("`" + code_m + "`", "<code>" + code_m + "</code>" )
+
         p = re.compile('<(.*?)>')
         results = p.findall(self.text)
         for m in results:
@@ -225,7 +306,16 @@ class Message(models.Model):
 
             if m.startswith('http'):
                 link = m.split("|")[0]
-                self.text = self.text.replace("<" + m + ">", "<a href='"+link + "'>" + link + "</a>" )
+                try:
+                    title = m.split("|")[1]
+                except IndexError:
+                    title = ''
+
+                if False: #link.endswith(('png', 'jpg', 'jpeg', 'gif',)):
+                    self.text = self.text.replace("<" + m + ">", "<a href='"+link + "' title='"+title+"'>" + "<img width=300px src='"+link+"'>" + "</a>" )
+                else:
+                    self.text = self.text.replace("<" + m + ">", "<a href='"+link + "' title='"+title+"'>" + link + "</a>" )
 
 
         return self.text
+

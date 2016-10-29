@@ -20,16 +20,19 @@ class Team(models.Model):
         url = 'https://slack.com/api/users.list?token=' + self.get_creator().slack_access_token
         r = requests.get(url)
 
+        if  'members' not in json.loads(r.content):
+            return
+
         members = json.loads(r.content)['members']
         for m in members:
-            if 'email' in m['profile'] and m['profile']['email'] is not None:
-                user, created = User.objects.get_or_create(slack_id=m['id'], email=m['profile']['email'],
-                                                       username=m['profile']['email'][:30])
-                user.slack_team_id = self.slack_id
-                user.slack_username =  m['name']
-                user.slack_avatar =  m['profile'].get('image_24','')
+            email=m['profile'].get('email', m['name'])
+            user, created = User.objects.get_or_create(slack_id=m['id'], email=email,
+                                                       username=email[:30])
+            user.slack_team_id = self.slack_id
+            user.slack_username =  m['name']
+            user.slack_avatar =  m['profile'].get('image_24','')
 
-                user.save()
+            user.save()
 
 
 
@@ -54,6 +57,7 @@ class User(AbstractUser):
             self.save()
 
         return self.team
+
 
 
 

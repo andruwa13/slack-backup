@@ -14,15 +14,14 @@ def slack_oauth_login(request):
     state = random_string(10)
 
     request.session['state'] = state
-
     url = 'https://slack.com/oauth/authorize?client_id=' + settings.SLACK_CLIENT_ID + "&state=" + state \
-          + "&scope=read&redirect_uri=" + settings.DOMAIN + "/slack-oauth/callback"
+          + "&scope=identify%20channels:history%20channels:read%20users:read%20usergroups:read&redirect_uri=" + settings.DOMAIN + "/slack-oauth/callback"
     return HttpResponseRedirect(url)
 
 
 def logout_view(request):
     if request.user.is_authenticated():
-        logout(request.user)
+        logout(request)
     return HttpResponseRedirect("/")
 
 
