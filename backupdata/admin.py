@@ -5,6 +5,7 @@ from django.contrib import admin
 def restore_backup(modeladmin, request, queryset):
     import zipfile
     import tempfile
+    import shutil
     from backupdata.management.commands.restore_backup import restore_files
 
     for obj in queryset:
@@ -12,7 +13,9 @@ def restore_backup(modeladmin, request, queryset):
         zip_ref = zipfile.ZipFile(obj.export.url, 'r')
         zip_ref.extractall(tmp_directory)
         zip_ref.close()
-        restore_files(tmp_directory)
+        restore_files(tmp_directory+"/")
+        shutil.rmtree(tmp_directory)
+
 
 
 

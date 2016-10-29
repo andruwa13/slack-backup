@@ -7,7 +7,7 @@ import datetime
 
 from django.core.management.base import BaseCommand, CommandError
 
-def restore_files(self, folder):
+def restore_files(folder):
     data = {}
     with open(folder + 'channels.json', 'r') as channels_file:
         data = channels_file.read()
@@ -50,5 +50,5 @@ class Command(BaseCommand):
 
         folder = "/usr/local/src/slack-backup/full_history/"
 
-        self.restore_files(folder)
+        restore_files(folder)
 
