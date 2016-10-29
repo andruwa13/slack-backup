@@ -95,9 +95,9 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 )
-# # Parse database configuration from $DATABASE_URL
-# import dj_database_url
-# DATABASES['default'].update(dj_database_url.config())
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+DATABASES['default'].update(dj_database_url.config())
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -119,45 +119,6 @@ DOMAIN = os.getenv('APP_URL', "http://localhost:8000")
 SLACK_CLIENT_ID = os.getenv('SLACK_CLIENT_ID', '')
 SLACK_CLIENT_SECRET = os.getenv('SLACK_CLIENT_SECRET', '')
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'main_formatter': {
-            'format': '%(levelname)s:%(name)s: %(message)s '
-                      '(%(asctime)s; %(filename)s:%(lineno)d)',
-            'datefmt': "%Y-%m-%d %H:%M:%S",
-        },
-    },
-    'handlers': {
-        'debug_file':{
-            'level' : 'DEBUG',
-            'class' : 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
-            'maxBytes': 1024*1024*500, # 500 MB
-            'backupCount' : 5,
-            'formatter': 'main_formatter',
-        },
-        'console':{
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'main_formatter',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['debug_file', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        '': {
-            'handlers': ['debug_file', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
-
 
 try:
     from settings_local import *
@@ -171,3 +132,4 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 )
 
 ADMINS = (('admin', os.getenv('ADMIN_EMAIL', '')))
+

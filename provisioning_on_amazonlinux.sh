@@ -8,7 +8,7 @@ DOMAIN=localhost
 # install
 sudo yum install -y gcc gcc-c++ git python postgresql-server postgresql-devel
 cd /usr/local/src
-sudo git clone https://github.com/snakazawa/slack-backup.git
+sudo git clone https://github.com/menemy/slack-backup.git
 cd slack-backup/
 sudo pip install -r requirements.txt
 
@@ -21,6 +21,9 @@ sudo sed -i -E "s/DOMAIN.*/DOMAIN = 'http:\/\/${DOMAIN}'/" slackbackup/settings_
 # migration and crawling
 sudo python manage.py migrate
 sudo python manage.py parse_channels
+
+# prepare static files
+sudo python manage.py collectstatic
 
 # scheduling
 sudo touch /etc/cron.d/slackbackup
@@ -35,8 +38,8 @@ EOS
 sudo chmod 644 /etc/cron.d/slackbackup
 
 # run
-RUN_SCRIPT="python ${DIR}/manage.py runserver 0.0.0.0:80 1>>${DIR}/logs/run.log 2>>${DIR}/logs/run.err.log"
+RUN_SCRIPT="/usr/local/bin/uswgi --ini ${DIR}/uwsgi.ini"
 sudo chmod 777 /etc/rc.d/rc.local
 echo $RUN_SCRIPT >> /etc/rc.d/rc.local
 sudo chmod 755 /etc/rc.d/rc.local
-sudo sh -c "${RUN_SCRIPT} &"
+sudo sh -c "${RUN_SCRIPT}"
