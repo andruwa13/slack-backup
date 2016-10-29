@@ -68,7 +68,7 @@ def stats(request):
     stats.append(
         {
             'name': 'Message time by hour', 
-            'items': [{'link': "",'name': stat['hour']+":00", 'value': stat['count']} for stat in message_hour_q[:10]],
+            'items': [{'link': "",'name': str(stat['hour'])+":00", 'value': stat['count']} for stat in message_hour_q[:10]],
             'total': message_time_q.aggregate(Sum('count'))['count__sum']
         }
     )
@@ -78,7 +78,7 @@ def stats(request):
     stats.append(
         {
             'name': 'Top channels', 
-            'items': [{'link': "/channels/"+stat['channel__name'],'name': stat['channel__name'], 'value': stat['count']} for stat in channel_message_count_q[:10]],
+            'items': [{'link': "/channels/"+str(stat['channel__name']),'name': stat['channel__name'], 'value': stat['count']} for stat in channel_message_count_q[:10]],
             'total': channel_message_count_q.aggregate(Sum('count'))['count__sum']
         }
     )
@@ -86,7 +86,7 @@ def stats(request):
     stats.append( 
         {
             'name': 'Top users by length', 
-            'items': [{'link': "/team/"+stat['slack_username'],'name': stat['slack_username'], 'value': stat['text_len']} for stat in user_by_text_length_q[:10]],
+            'items': [{'link': "/team/"+str(stat['slack_username']),'name': stat['slack_username'], 'value': stat['text_len']} for stat in user_by_text_length_q[:10]],
             'total': user_by_text_length_q.aggregate(Sum('text_len'))['text_len__sum']
         }
     )
@@ -94,7 +94,7 @@ def stats(request):
     stats.append( 
         {
             'name': 'Top users by message count', 
-            'items': [{'link': "/team/"+stat['user__slack_username'],'name': stat['user__slack_username'], 'value': stat['count']} for stat in user_by_message_count_q[:10]],
+            'items': [{'link': "/team/"+str(stat['user__slack_username']),'name': stat['user__slack_username'], 'value': stat['count']} for stat in user_by_message_count_q[:10]],
             'total': user_by_message_count_q.aggregate(Sum('count'))['count__sum']
          }
     )

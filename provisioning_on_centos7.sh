@@ -22,6 +22,7 @@ sudo sed -i -E "s/SLACK_CLIENT_SECRET.*/SLACK_CLIENT_SECRET = '${SLACK_CLIENT_SE
 sudo sed -i -E "s/DOMAIN.*/DOMAIN = 'http:\/\/${DOMAIN}'/" slackbackup/settings_local.py
 
 # migration and crawling
+sudo python manage.py makemigrations
 sudo python manage.py migrate
 sudo python manage.py parse_channels
 
