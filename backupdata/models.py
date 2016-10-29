@@ -320,6 +320,10 @@ class Message(models.Model):
 
         return self.text
 
+class Export(models.Model):
+    export = models.FileField(upload_to='export/')
+    uploaded = models.DateTimeField(null=True, db_index=True)
+
 
 from watson import search as watson
 watson.register(Message)
