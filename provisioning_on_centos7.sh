@@ -7,7 +7,7 @@ DOMAIN=localhost
 
 # install
 sudo yum install -y gcc gcc-c++ git python python-pip
-sudo yum install -y uwsgi
+sudo yum install -y uwsgi uwsgi-router-http uwsgi-plugin-python
 #sudo yum install -y postgresql-server postgresql-devel
 
 cd /usr/local/src
@@ -26,7 +26,12 @@ sudo python manage.py migrate
 sudo python manage.py parse_channels
 
 # prepare static files
-sudo python manage.py collectstatic
+mkdir /usr/local/src/slack-backup/static
+sudo python manage.py collectstatic --noinput
+
+#open firewall
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+firewall-cmd --reload
 
 # scheduling
 sudo touch /etc/cron.d/slackbackup
