@@ -1,6 +1,6 @@
 requests
 Django==1.10.2
 django-el-pagination==3.0.1
-git+https://github.com/gaqzi/django-emoji.git
 emoji==0.3.9
+-e git+https://github.com/gaqzi/django-emoji.git#egg=django-emoji
 Pygments==2.1.3
