@@ -7,6 +7,7 @@ DOMAIN=localhost
 
 # install
 sudo yum install -y gcc gcc-c++ git python python-pip
+sudo yum install -y uwsgi
 #sudo yum install -y postgresql-server postgresql-devel
 
 cd /usr/local/src
@@ -40,7 +41,7 @@ EOS
 sudo chmod 644 /etc/cron.d/slackbackup
 
 # run
-RUN_SCRIPT="/usr/local/bin/uswgi --ini ${DIR}/uwsgi.ini"
+RUN_SCRIPT="/usr/sbin/uwsgi --ini ${DIR}/uwsgi.ini"
 sudo chmod 777 /etc/rc.d/rc.local
 echo $RUN_SCRIPT >> /etc/rc.d/rc.local
 sudo chmod 755 /etc/rc.d/rc.local
