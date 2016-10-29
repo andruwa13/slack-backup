@@ -320,3 +320,8 @@ class Message(models.Model):
 
         return self.text
 
+
+from watson import search as watson
+watson.register(Message)
+watson.register(Channel)
+

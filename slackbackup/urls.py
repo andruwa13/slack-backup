@@ -2,7 +2,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from backupdata.views import home, stats, team, user, channels, channel_detail, channel_message, channel_detail_name
 from user_profile.views import slack_oauth_login, slack_oauth_callback , logout_view
-
+from django.contrib.auth.decorators import login_required
+from watson.views import search
 
 
 urlpatterns = [
@@ -20,5 +21,6 @@ urlpatterns = [
     url(r'^accounts/login/$', slack_oauth_login),
     url(r'^slack-oauth/callback$', slack_oauth_callback, name='slack_oauth_callback'),
     url(r'^logout', logout_view, name='logout_view'),
+    url(r"^search/", login_required(search), name="search"),
     url(r'^admin/', include(admin.site.urls)),
 ]

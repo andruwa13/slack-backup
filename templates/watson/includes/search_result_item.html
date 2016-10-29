@@ -1,0 +1,11 @@
+<tr>
+    <td class="username">
+        <img src="{{ obj.get_user.slack_avatar }}" style="width: 24px; height: 24px;"/>
+        {{ obj.get_user.slack_username }}
+    </td>
+    <td>:
+        {{ obj.get_text |safe }}
+        <br><a href="{{result.url}}">перейти в беседу</a>
+        <span class="dt">{{ obj.ts }}</span>
+    </td>
+</tr>
