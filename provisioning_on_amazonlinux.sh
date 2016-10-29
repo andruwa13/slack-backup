@@ -6,7 +6,9 @@ DIR=/usr/local/src/slack-backup
 DOMAIN=localhost
 
 # install
-sudo yum install -y gcc gcc-c++ git python postgresql-server postgresql-devel
+sudo yum install -y gcc gcc-c++ git python python-pip
+#sudo yum install -y postgresql-server postgresql-devel
+
 cd /usr/local/src
 sudo git clone https://github.com/menemy/slack-backup.git
 cd slack-backup/
